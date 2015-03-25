@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def load_answers(csv_file="data/questions_answer.csv"):
@@ -12,13 +13,14 @@ def load_answers(csv_file="data/questions_answer.csv"):
     """
 
     df = pd.DataFrame.from_csv(csv_file)
+    df["log_times"] = np.log(df["solving_time"])
 
     return df
 
 
 def filter_long_times(answers, max_time=100):
     """
-    Remove answers with long and negative solving time
+    Remove answers with long and non-positive solving time
 
     Args:
         answers (pandas.DataFrame)
@@ -27,4 +29,4 @@ def filter_long_times(answers, max_time=100):
         pandas.DataFrame
     """
 
-    return answers[(0 <= answers["solving_time"]) & (answers["solving_time"] < max_time)]
+    return answers[(0 < answers["solving_time"]) & (answers["solving_time"] < max_time)]
