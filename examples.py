@@ -74,10 +74,26 @@ def log_mean_time_hist(answers=None, normed_according_to="user"):
     sns.distplot(answers["log_times_mean"], color="r", label="log-mean times")
     plt.xlim(0, 30)
 
-response_time_hist()
-# time_accuracy_trade_off()
-# normed_time_accuracy_trade_off()
-# normed_time_accuracy_trade_off(normed_according_to="question")
-# log_mean_time_hist()
-# log_mean_time_hist(normed_according_to="question")
+
+def get_geography_answers(filename="../thrans/model comparison/data/raw data/geography-all.csv"):
+    answers = pd.DataFrame.from_csv(filename, index_col=False)
+    answers["solving_time"] = answers["response_time"] / 1000.
+    answers["log_times"] = np.log(answers["solving_time"])
+    answers["correctly_solved"] = answers["place_asked"] == answers["place_answered"]
+    answers["question"] = answers["place_asked"]
+
+    return answers
+
+
+answers = get_geography_answers()
+# answers = load_answers()
+
+# response_time_hist(answers)
+# time_accuracy_trade_off(answers)
+# normed_time_accuracy_trade_off(answers)
+# normed_time_accuracy_trade_off(answers, normed_according_to="question")
+# log_mean_time_hist(answers)
+# log_mean_time_hist(answers, normed_according_to="question")
+
 plt.show()
+
