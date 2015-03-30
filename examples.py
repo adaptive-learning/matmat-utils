@@ -69,18 +69,20 @@ def normed_time_accuracy_trade_off(answers=None, normed_according_to="user"):
 def log_mean_time_hist(answers=None, normed_according_to="user"):
     answers = answers if answers is not None else load_answers()
     answers = filter_long_times(answers)
-    answers = answers.join(np.exp(answers.groupby(normed_according_to)["log_times"].mean()), on=normed_according_to, rsuffix='_mean')
     plt.title("Histogram of log-means of response time of {}".format(normed_according_to))
-    sns.distplot(answers["log_times_mean"], color="r", label="log-mean times")
+    data = np.exp(answers.groupby(normed_according_to)["log_times"].mean()).to_dict().values()
+    sns.distplot(data, color="r", label="log-mean times")
     plt.xlim(0, 30)
 
 
-def get_geography_answers(filename="../thrans/model comparison/data/raw data/geography-all.csv"):
+def get_geography_answers(filename="../thrans/model comparison/data/raw data/geography-all.csv", min_answers_per_item=1000, min_answers_per_user=10):
     answers = pd.DataFrame.from_csv(filename, index_col=False)
     answers["solving_time"] = answers["response_time"] / 1000.
     answers["log_times"] = np.log(answers["solving_time"])
     answers["correctly_solved"] = answers["place_asked"] == answers["place_answered"]
     answers["question"] = answers["place_asked"]
+    answers = answers[answers.join(pd.Series(answers.groupby("question").apply(len), name="count"), on="question")["count"] > min_answers_per_item]
+    answers = answers[answers.join(pd.Series(answers.groupby("user").apply(len), name="count"), on="user")["count"] > min_answers_per_user]
 
     return answers
 
