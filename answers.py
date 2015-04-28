@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def     load_answers(csv_file="data/questions_answer.csv"):
+def load_answers(csv_file="data/questions_answer.csv"):
     """
     Loads answers form csv to pandas DataFrame
 
@@ -30,6 +30,25 @@ def filter_long_times(answers, max_time=100):
     """
 
     return answers[(0 < answers["solving_time"]) & (answers["solving_time"] < max_time)]
+
+
+def filter_users(answers, min_answers_per_user=10, min_answers_per_item=1):
+    answers = answers[answers.join(pd.Series(answers.groupby("question").apply(len), name="count"), on="question")["count"] > min_answers_per_item]
+    answers = answers[answers.join(pd.Series(answers.groupby("user").apply(len), name="count"), on="user")["count"] > min_answers_per_user]
+    return answers
+
+
+def join_response_time_means(answers, of="user"):
+    answers["log_times"] = np.log(answers["solving_time"])
+    return answers.join(np.exp(pd.Series(answers.groupby(of)["log_times"].apply(np.mean), name="{}_rt_mean".format(of))), on=of)
+
+
+def join_success_rates(answers, of="user"):
+    return answers.join(pd.Series(answers.groupby(of)["correctly_solved"].apply(np.mean), name="{}_success_rate".format(of)), on=of)
+
+
+def join_answers_count(answers, of="user"):
+    return answers.join(pd.Series(answers.groupby(of).apply(len), name="{}_answer_count".format(of)), on=of)
 
 
 def get_geography_answers(filename="../thrans/model comparison/data/raw data/geography-all.csv", min_answers_per_item=1000, min_answers_per_user=10):
