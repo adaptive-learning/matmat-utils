@@ -13,7 +13,6 @@ def load_answers(csv_file="data/questions_answer.csv"):
     """
 
     df = pd.DataFrame.from_csv(csv_file)
-    df["log_times"] = np.log(df["solving_time"])
 
     return df
 
@@ -49,6 +48,18 @@ def join_success_rates(answers, of="user"):
 
 def join_answers_count(answers, of="user"):
     return answers.join(pd.Series(answers.groupby(of).apply(len), name="{}_answer_count".format(of)), on=of)
+
+
+def convert_answers_to_model(answers):
+    answers = filter_long_times(filter_users(answers))
+    answers["correct"] = answers["correctly_solved"]
+    answers["student"] = answers["user"]
+    answers["item"] = answers["question"]
+    answers["response_time"] = answers["solving_time"]
+    answers["id"] = answers.index
+    del answers["correctly_solved"], answers["user"], answers["question"], answers["solving_time"]
+
+    return answers
 
 
 def get_geography_answers(filename="../thrans/model comparison/data/raw data/geography-all.csv", min_answers_per_item=1000, min_answers_per_user=10):
