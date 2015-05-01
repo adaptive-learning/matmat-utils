@@ -18,7 +18,7 @@ class EloTimeModel(Model):
         self.time_penalty_slope = time_penalty_slope
 
     def __str__(self):
-        return "Elo; decay - alpha: {}, beta: {}, slope: {}".format(self.alpha, self.beta, self.time_penalty_slope)
+        return "Elo time decay; decay - alpha: {}, beta: {}, slope: {}".format(self.alpha, self.beta, self.time_penalty_slope)
 
     def predict(self, student, item, extra=None):
         random_factor = 0 if extra is None or extra.get("choices", 0) == 0 else 1. / extra["choices"]
@@ -39,7 +39,7 @@ class EloTimeModel(Model):
             return 0
 
         expected_solving_time = 5
-        if expected_solving_time > response_time:
+        if expected_solving_time < response_time:
             return 1
 
         return self.time_penalty_slope ** ((response_time / expected_solving_time) - 1)

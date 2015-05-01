@@ -17,7 +17,7 @@ data = Data("data/matmat-all.pd", train=0)
 # model = EloTreeModel(get_question_parents(load_questions()), skill_parents=get_skill_parents(load_skills()))
 # model = EloPriorCurrentModel()
 
-slopes = [0.95, 1.05, 0.6, 0.8, 0.9, 1, 1.1, 1.2]
+slopes = [0.6, 0.8, 0.85, 0.9, 0.95, 1., 1.05, 1.1, 1.2]
 rmses = []
 
 for slope in slopes:
