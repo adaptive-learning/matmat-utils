@@ -5,7 +5,7 @@ from skills import get_skill_parents, load_skills, get_question_parents
 
 class EloTreeModel(Model):
 
-    def __init__(self, item_parents, skill_parents, alpha=1.0, beta=0.1, KC=1, KI=1, decay_function=None, level_decay=None):
+    def __init__(self, item_parents, skill_parents, alpha=1.0, beta=0.1, KC=1, KI=1, decay_function=None, level_decay=3):
         Model.__init__(self)
 
         self.alpha = alpha
@@ -13,7 +13,8 @@ class EloTreeModel(Model):
         self.KC = KC
         self.KI = KI
         self.decay_function = decay_function if decay_function is not None else lambda x: alpha / (1 + beta * x)
-        self.level_decay = level_decay if level_decay is not None else lambda level: 1. / 3 ** (3 - level)
+        self.level_decay = level_decay
+        self.level_decay_fce = lambda level: 1. / level_decay ** (3 - level)
 
         self.skill_parents = skill_parents
         self.item_parents = item_parents
@@ -24,7 +25,7 @@ class EloTreeModel(Model):
         self.first_attempt = defaultdict(lambda: defaultdict(lambda: True))
 
     def __str__(self):
-        return "Elo Tree; decay - alpha: {}, beta: {}, KC: {}, KI: {}".format(self.alpha, self.beta, self.KC, self.KI )
+        return "Elo Tree; decay - alpha: {}, beta: {}, KC: {}, KI: {}, LD: {}".format(self.alpha, self.beta, self.KC, self.KI, self.level_decay)
 
     def predict(self, student, item, extra=None):
         skill = self._get_skill(student, self.item_parents[item])
@@ -38,7 +39,7 @@ class EloTreeModel(Model):
         for level, skill in enumerate(self._get_parents(item)):
             p = sigmoid(self._get_skill(student, skill) - self.difficulty[item])
             K = self.KC if correct else self.KI
-            self.skill[skill][student] += self.level_decay(level) * (correct - p) * K
+            self.skill[skill][student] += self.level_decay_fce(level) * (correct - p) * K
 
         if self.first_attempt[item][student]:
             self.difficulty[item] -= self.decay_function(self.item_attempts[item]) * dif

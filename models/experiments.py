@@ -19,6 +19,7 @@ compare_models(data, [
     # EloModel(),
     EloModel(alpha=0.8, beta=0),
     EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5),
+    EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5, level_decay=1.5),
     # EloPriorCurrentModel(alpha=0.8, beta=0, KC=1, KI=1),
     EloTimeModel(alpha=0.8, beta=0, time_penalty_slope=0.9),
     EloPriorCurrentModel(alpha=0.8, beta=0, KC=2.5, KI=1),

@@ -31,6 +31,19 @@ def fit_time_decay():
     plt.plot(slopes, rmses)
 
 
+def level_decay():
+    decays = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+    rmses = []
+
+    for decay in decays:
+        model = EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5, level_decay=decay)
+
+        Runner(data, model).run()
+        rmses.append(Evaluator(data, model).evaluate()["rmse"])
+
+    plt.plot(decays, rmses)
+
+
 def skill_comparision():
     model = EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5)
     Runner(data, model).run()
@@ -41,5 +54,7 @@ def skill_comparision():
     plt.plot(skill1[common], skill2[common], ".")
     plt.xlabel(skill1.name)
     plt.ylabel(skill2.name)
+
+level_decay()
 
 plt.show()
