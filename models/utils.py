@@ -5,6 +5,7 @@ from models.elo import EloModel
 from evaluator import Evaluator
 from models.eloCurrent import EloPriorCurrentModel
 from models.eloTree import EloTreeModel
+from models.eloTreeDecay import EloTreeDecayModel
 from runner import Runner
 from skills import get_question_parents, load_questions, get_skill_parents, load_skills
 
@@ -23,6 +24,8 @@ def elo_grid_search(data, alpha_range=(0.4, 2, 0.2), beta_range=(0.02, 0.2, 0.02
                 model = EloPriorCurrentModel(alpha=alpha, beta=beta)
             if model_class == EloTreeModel:
                 model = EloTreeModel(get_question_parents(load_questions()), get_skill_parents(load_skills()), alpha=alpha, beta=beta)
+            if model_class == EloTreeDecayModel:
+                model = EloTreeDecayModel(get_question_parents(load_questions()), get_skill_parents(load_skills()), alpha=alpha, beta=beta)
             report = Evaluator(data, model).get_report()
             # results[alpha][beta] = report["brier"]["reliability"]
             results[alpha][beta] = report["rmse"]

@@ -4,6 +4,7 @@ import pylab as plt
 import seaborn as sbn
 from models.elo import EloModel
 from models.eloTree import EloTreeModel
+from models.eloTreeDecay import EloTreeDecayModel
 from models.eloCurrent import EloPriorCurrentModel
 from models.eloTime import EloTimeModel
 from skills import load_skills, load_questions, get_question_parents, get_skill_parents
@@ -18,17 +19,25 @@ compare_models(data, [
     AvgItemModel(),
     # EloModel(),
     EloModel(alpha=0.8, beta=0),
-    EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5),
-    EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5, level_decay=1.5),
+    # EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5),
+    EloTreeModel(qp, sp, alpha=0.6, beta=0.02, KC=3.5, KI=2.5),
+    # EloTreeModel(qp, sp, alpha=1.2, beta=0.1, KC=3.5, KI=2.5, level_decay=2.5),
+    EloTreeDecayModel(qp, sp, alpha=0.25, beta=0.02),
+    EloTreeDecayModel(qp, sp, alpha=0.25, beta=0),
+    # EloTreeDecayModel(qp, sp, alpha=1.2, beta=0.1, without_decay=True, KC=3.5, KI=2.5),
     # EloPriorCurrentModel(alpha=0.8, beta=0, KC=1, KI=1),
     EloTimeModel(alpha=0.8, beta=0, time_penalty_slope=0.9),
     EloPriorCurrentModel(alpha=0.8, beta=0, KC=2.5, KI=1),
-], dont=0, evaluate=0)
+], dont=1, evaluate=0)
 
 # compare_brier_curve(data, AvgItemModel(), EloModel(alpha=0.8, beta=0))
+# compare_brier_curve(data, EloTreeDecayModel(qp, sp, alpha=0.25, beta=0.02), EloModel(alpha=0.8, beta=0))
+# compare_brier_curve(data, EloTreeDecayModel(qp, sp, alpha=0.25, beta=0.02), EloTreeDecayModel(qp, sp, alpha=0.25, beta=0))
+# compare_brier_curve(data, EloTreeModel(qp, sp, alpha=0.6, beta=0.02, KC=3.5, KI=2.5), EloTreeDecayModel(qp, sp, alpha=0.25, beta=0))
 # elo_grid_search(data, beta_range=(0, 0.1, 0.02), model_class=EloModel)
 # elo_grid_search(data, beta_range=(0, 0.1, 0.02), model_class=EloPriorCurrentModel)
 # elo_grid_search(data, beta_range=(0, 0.2, 0.02), model_class=EloTreeModel)
+# elo_grid_search(data, alpha_range=(0.05, 0.4, 0.05), beta_range=(0, 0.1, 0.02), model_class=EloTreeDecayModel)
 
 # elo_pfa_search(data, model_class=EloPriorCurrentModel)
 # elo_pfa_search(data, model_class=EloTreeModel)
