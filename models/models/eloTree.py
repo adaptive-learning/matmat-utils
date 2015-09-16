@@ -4,6 +4,9 @@ from skills import get_skill_parents, load_skills, get_question_parents
 
 
 class EloTreeModel(Model):
+    """
+    Model work with tree structure and update all ancestors with level based decay
+    """
 
     def __init__(self, item_parents, skill_parents, alpha=1.0, beta=0.1, KC=3.5, KI=2.5, decay_function=None, level_decay=3):
         Model.__init__(self)

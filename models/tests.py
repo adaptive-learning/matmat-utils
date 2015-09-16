@@ -13,7 +13,7 @@ from utils import elo_grid_search, compare_models, compare_brier_curve, get_skil
 import pandas as pd
 
 
-data = Data("data/matmat-all.pd", train=0)
+data = Data("data/matmat-all-2015-09-16.pd", train=0)
 qp, sp = get_question_parents(load_questions()), get_skill_parents(load_skills())
 # model = EloTreeModel(get_question_parents(load_questions()), skill_parents=get_skill_parents(load_skills()))
 # model = EloPriorCurrentModel()
@@ -55,6 +55,7 @@ def skill_comparision():
     plt.xlabel(skill1.name)
     plt.ylabel(skill2.name)
 
-level_decay()
+# level_decay()
+fit_time_decay()
 
 plt.show()

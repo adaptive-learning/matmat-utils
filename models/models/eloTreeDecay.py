@@ -1,9 +1,13 @@
 from collections import defaultdict
+from hashlib import sha1
 from model import Model, sigmoid
 from skills import get_skill_parents, load_skills, get_question_parents
 
 
 class EloTreeDecayModel(Model):
+    """
+    Model work with tree structure and update all ancestors with standard decay based on number of answers
+    """
 
     def __init__(self, item_parents, skill_parents, alpha=1.0, beta=0.1, KC=3.5, KI=2.5, without_decay=False):
         Model.__init__(self)
@@ -24,7 +28,7 @@ class EloTreeDecayModel(Model):
         self.first_attempt = defaultdict(lambda: defaultdict(lambda: True))
 
     def __str__(self):
-        return "Elo Tree Decay; decay - alpha: {}, beta: {}, KC: {}, KI: {}{}".format(self.alpha, self.beta, self.KC, self.KI, " without decay2" if self.without_decay else "")
+        return "Elo Tree Decay; decay - alpha: {}, beta: {}, KC: {}, KI: {}{} map:{}".format(self.alpha, self.beta, self.KC, self.KI, " without decay2" if self.without_decay else "", sha1(str(self.item_parents)+str(self.skill_parents)).hexdigest()[:10])
 
     def predict(self, student, item, extra=None):
         skill = self._get_skill(student, self.item_parents[item])
@@ -50,9 +54,13 @@ class EloTreeDecayModel(Model):
 
     def _get_skill(self, student, skill):
         skill_value = 0
+        counter = 0
         while skill is not None:
+            counter += 1
             skill_value += self.skill[skill][student]
             skill = self.skill_parents[skill]
+            if counter > 10:
+                print skill, self.skill_parents[skill]
         return skill_value
 
     def _get_parents(self, item):
