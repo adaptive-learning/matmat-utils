@@ -21,9 +21,8 @@ def compute_difficulties(model):
 
 # compute_difficulties(EloTreeDecayModel(qp, sp, alpha=0.25, beta=0.02))
 
-difficulties = json.load(open("cache/difficulties.json"))
 
-def get_avg_difficulty(a, b):
+def get_avg_over_questions(a, b, data):
     skill_id = skills[skills["name"] == u"{}x{}".format(a, b)].index[0]
     sum, count = 0, 0
     for qid in questions[questions["skill"] == skill_id].index:
@@ -31,23 +30,26 @@ def get_avg_difficulty(a, b):
         count += 1
     return sum / count
 
-if 1:
-    d = np.array([[get_avg_difficulty(a, b) for b in range(1, 11)] for a in range(1, 11)])
-    plt.pcolor(d)
+def get_error_rate(a, b, data):
+    skill_id = skills[skills["name"] == u"{}x{}".format(a, b)].index[0]
+    return 1 - data[skill_id]
+
+def plot_table(data):
+    plt.figure()
+    plt.pcolor(data)
     plt.xticks(np.arange(1, 11) - 0.5, range(1, 11))
     plt.yticks(np.arange(1, 11) - 0.5, range(1, 11))
     plt.ylabel("first")
     plt.xlabel("second")
     plt.colorbar()
 
-if 1:
-    plt.figure()
-    d = np.array([[get_avg_difficulty(a, b) - get_avg_difficulty(b, a) for b in range(1, 11)] for a in range(1, 11)])
-    plt.pcolor(d)
-    plt.xticks(np.arange(1, 11) - 0.5, range(1, 11))
-    plt.yticks(np.arange(1, 11) - 0.5, range(1, 11))
-    plt.ylabel("first")
-    plt.xlabel("second")
-    plt.colorbar()
+difficulties = json.load(open("cache/difficulties.json"))
+success_rates = data.get_dataframe_all().join(questions, on="item").groupby("skill")["correct"].mean()
+# diffi = np.array([[get_avg_over_questions(a, b, difficulties) for b in range(1, 11)] for a in range(1, 11)])
+# diffe = np.array([[get_avg_over_questions(a, b,difficulties) - get_avg_over_questions(b, a, difficulties) for b in range(1, 11)] for a in range(1, 11)])
+# diffi = np.array([[get_error_rate(a, b, success_rates) for b in range(1, 11)] for a in range(1, 11)])
+diffe = np.array([[get_error_rate(a, b, success_rates) - get_error_rate(b, a, success_rates) for b in range(1, 11)] for a in range(1, 11)])
+
+plot_table(diffe)
 
 plt.show()
