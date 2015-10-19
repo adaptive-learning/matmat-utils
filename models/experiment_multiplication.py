@@ -32,7 +32,7 @@ def get_avg_over_questions(a, b, data):
 
 def get_error_rate(a, b, data):
     skill_id = skills[skills["name"] == u"{}x{}".format(a, b)].index[0]
-    return 1 - data[skill_id]
+    return data[skill_id]
 
 def plot_table(data):
     plt.figure()
@@ -44,12 +44,12 @@ def plot_table(data):
     plt.colorbar()
 
 difficulties = json.load(open("cache/difficulties.json"))
-success_rates = data.get_dataframe_all().join(questions, on="item").groupby("skill")["correct"].mean()
+success_rates = data.get_dataframe_all().join(questions, on="item").groupby("skill")["correct"].count()
 # diffi = np.array([[get_avg_over_questions(a, b, difficulties) for b in range(1, 11)] for a in range(1, 11)])
 # diffe = np.array([[get_avg_over_questions(a, b,difficulties) - get_avg_over_questions(b, a, difficulties) for b in range(1, 11)] for a in range(1, 11)])
-# diffi = np.array([[get_error_rate(a, b, success_rates) for b in range(1, 11)] for a in range(1, 11)])
-diffe = np.array([[get_error_rate(a, b, success_rates) - get_error_rate(b, a, success_rates) for b in range(1, 11)] for a in range(1, 11)])
+diffi = np.array([[get_error_rate(a, b, success_rates) for b in range(1, 11)] for a in range(1, 11)])
+# diffe = np.array([[get_error_rate(a, b, success_rates) - get_error_rate(b, a, success_rates) for b in range(1, 11)] for a in range(1, 11)])
 
-plot_table(diffe)
+plot_table(diffi)
 
 plt.show()
