@@ -44,10 +44,10 @@ def plot_table(data):
     plt.colorbar()
 
 difficulties = json.load(open("cache/difficulties.json"))
-success_rates = data.get_dataframe_all().join(questions, on="item").groupby("skill")["correct"].count()
+success_rates = data.get_dataframe_all().join(questions, on="item").groupby("skill")["correct"].mean()
 # diffi = np.array([[get_avg_over_questions(a, b, difficulties) for b in range(1, 11)] for a in range(1, 11)])
 # diffe = np.array([[get_avg_over_questions(a, b,difficulties) - get_avg_over_questions(b, a, difficulties) for b in range(1, 11)] for a in range(1, 11)])
-diffi = np.array([[get_error_rate(a, b, success_rates) for b in range(1, 11)] for a in range(1, 11)])
+diffi = np.array([[1 - get_error_rate(a, b, success_rates) for b in range(1, 11)] for a in range(1, 11)])
 # diffe = np.array([[get_error_rate(a, b, success_rates) - get_error_rate(b, a, success_rates) for b in range(1, 11)] for a in range(1, 11)])
 
 plot_table(diffi)

@@ -16,7 +16,7 @@ def load_skills(csv_file=None):
         pandas.DataFrame
     """
     if csv_file is None:
-        csv_file = os.path.join(BASE_DIR, "data/model_skill.csv")
+        csv_file = os.path.join(BASE_DIR, "data/source/model_skill.csv")
     df = pd.DataFrame.from_csv(csv_file)
 
     return df
@@ -24,7 +24,7 @@ def load_skills(csv_file=None):
 
 def load_questions(csv_file=None):
     if csv_file is None:
-        csv_file = os.path.join(BASE_DIR, "data/questions_question.csv")
+        csv_file = os.path.join(BASE_DIR, "data/source/questions_question.csv")
     df = pd.DataFrame.from_csv(csv_file)
     return df
 
